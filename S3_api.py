@@ -2,6 +2,7 @@ import boto3
 from botocore.exceptions import NoCredentialsError, PartialCredentialsError
 import logging
 import sys
+import os
 
 
 logger=logging.getLogger()
