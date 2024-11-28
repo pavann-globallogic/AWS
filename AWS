@@ -43,6 +43,7 @@ Boto3:
 Boto3 is the official AWS SDK for Python. It's a powerful library that simplifies interactions with various AWS services, including Amazon S3.
 With Boto3, you can efficiently manage and utilize the vast capabilities of AWS from within your Python applications like like uploading, downloading, and managing objects.
 
+Common Boto3 Operations:
 1. create_bucket
 Creates a new S3 bucket to store objects.
 Use case: Storing static website content, data backups, or application data.
