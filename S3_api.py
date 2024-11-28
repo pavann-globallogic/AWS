@@ -134,6 +134,6 @@ def main():
     # Add tags to an object
     add_tags_to_object(s3, bucket_name, "uploaded-testfile.txt")
 
-# Run the main function
+
 if __name__ == "__main__":
     main()
