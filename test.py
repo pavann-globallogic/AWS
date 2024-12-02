@@ -148,8 +148,108 @@ class TestS3Operations(unittest.TestCase):
         data = read_s3_object(s3, bucket_name, object_key)
         self.assertEqual(data, "Hello, world!")
         logger.info("test_read_s3_object passed.")
+
+    # Negative Test Cases
+
+    @mock_s3
+    def test_upload_file_nonexistent_bucket(self):
+        """
+        Test uploading a file to a non-existent S3 bucket.
+        """
+        bucket_name = "non-existent-bucket"
+        file_name = "testfile.txt"
+        object_name = "uploaded-testfile.txt"
+        
+        # Mock the AWS S3 service
+        s3 = boto3.client('s3', region_name='us-east-1')
+        
+        # Create a temporary file to upload
+        with open(file_name, 'w') as f:
+            f.write("Hello, world!")
+        
+        # Call the function and expect an error
+        with self.assertRaises(Exception):
+            upload_file(s3, bucket_name, file_name, object_name)
+        logger.info("test_upload_file_nonexistent_bucket passed.")
+
+    @mock_s3
+    def test_download_file_nonexistent_object(self):
+        """
+        Test downloading a non-existent file from an S3 bucket.
+        """
+        bucket_name = "test-bucket-12345"
+        object_name = "non-existent-object.txt"
+        file_name = "downloaded-testfile.txt"
+        
+        # Mock the AWS S3 service
+        s3 = boto3.client('s3', region_name='us-east-1')
+        s3.create_bucket(Bucket=bucket_name)
+        
+        # Call the function and expect an error
+        with self.assertRaises(Exception):
+            download_file(s3, bucket_name, object_name, file_name)
+        logger.info("test_download_file_nonexistent_object passed.")
+
+    @mock_s3
+    def test_delete_file_nonexistent_object(self):
+        """
+        Test deleting a non-existent file from an S3 bucket.
+        """
+        bucket_name = "test-bucket-12345"
+        object_name = "non-existent-object.txt"
+        
+        # Mock the AWS S3 service
+        s3 = boto3.client('s3', region_name='us-east-1')
+        s3.create_bucket(Bucket=bucket_name)
+        
+        # Call the function and expect an error
+        with self.assertRaises(Exception):
+            delete_file(s3, bucket_name, object_name)
+        logger.info("test_delete_file_nonexistent_object passed.")
     
+    @mock_s3
+    def test_read_s3_object_nonexistent_object(self):
+        """
+        Test reading data from a non-existent S3 object.
+        """
+        bucket_name = "test-bucket-12345"
+        object_key = "non-existent-file.txt"
+        
+        # Mock the AWS S3 service
+        s3 = boto3.client('s3', region_name='us-east-1')
+        s3.create_bucket(Bucket=bucket_name)
+        
+        # Call the function and expect an error
+        with self.assertRaises(Exception):
+            read_s3_object(s3, bucket_name, object_key)
+        logger.info("test_read_s3_object_nonexistent_object passed.")
+    
+    @mock_s3
+    @patch('boto3.Session')
+    def test_create_s3_session_no_credentials(self, mock_session):
+        """
+        Test creating an S3 session without credentials.
+        """
+        mock_session.side_effect = NoCredentialsError
+
+        with self.assertRaises(NoCredentialsError):
+            create_s3_session()
+        logger.info("test_create_s3_session_no_credentials passed.")
+    
+    @mock_s3
+    @patch('boto3.Session')
+    def test_create_s3_session_partial_credentials(self, mock_session):
+        """
+        Test creating an S3 session with partial credentials.
+        """
+        mock_session.side_effect = PartialCredentialsError(provider='aws', cred_var='aws_access_key_id')
+
+        with self.assertRaises(PartialCredentialsError):
+            create_s3_session()
+        logger.info("test_create_s3_session_partial_credentials passed.")
+
 if __name__ == '__main__':
     # Run the test suite
-    unittest.TextTestRunner().run(unittest.makeSuite(TestS3Operations))
+    unittest.TextTest
+
 
